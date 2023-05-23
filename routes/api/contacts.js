@@ -12,45 +12,29 @@ const {
 
 const { answer } = require("../../utilites/answer")
 
-// function send(result) {
-//   // const 
-//   return {
-//       status: 'success',
-//       code: 200,
-//       data: {
-//         result
-//       },
-//   }
-// }
-
 router.get('/', async (req, res, next) => {
-  // res.json({ message: 'template message' })
   const contacts = await listContacts();
-
-  // res.json({
-  //   status: 'success',
-  //   code: 200,
-  //   data: {
-  //     contacts,
-  //   },
-  // });
-
   res.json(answer(contacts, 200));
 })
 
 router.get('/:contactId', async (req, res, next) => {
-  // res.json({ message: 'template message' })
   const id = req.params.contactId;
   const contactById = await getContactById(id);
   if (contactById) {
-    //
+    res.json(answer(contactById, 200));
   } else {
-    //
+    res.status(404).json({ message: 'Not found' });
   }
 })
 
 router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
+  const { name, email, phone } = req.body;
+  if (name && email && phone) {
+    const newContact = await addContact({ name, email, phone });
+    res.status(201).json(answer(newContact, 201));
+  } else {
+    res.status(404).json({ message: 'missing required name field' });
+  }
 })
 
 router.delete('/:contactId', async (req, res, next) => {
