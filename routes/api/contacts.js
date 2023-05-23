@@ -3,11 +3,11 @@ const express = require('express')
 const router = express.Router()
 
 router.get('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
+  res.json({ message: 'template message 1' })
 })
 
 router.get('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
+  res.json({ message: 'template message 2' })
 })
 
 router.post('/', async (req, res, next) => {
