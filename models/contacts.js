@@ -52,9 +52,6 @@ const updateContact = async (contactId, body) => {
   if (index === -1) {
     return null;
   }
-  // contacts[index].name = name;
-  // contacts[index].email = email;
-  // contacts[index].phone = phone;
   contacts[index] = {
     id,
     name, 
