@@ -67,7 +67,12 @@ const updateContact = async (contactId, body) => {
   // const newFileContent = JSON.stringify(contacts, null, 2);
   // await fs.writeFile(contactsPath, newFileContent);
   // return contacts[index];
-  return findByIdAndUpdate(id, body, {new: true});
+  return Contact.findByIdAndUpdate(id, body, {new: true});
+}
+
+const updateContactFavorite = async (contactId, favorite) => {
+  const id = String(contactId);
+  return Contact.findByIdAndUpdate(id, {favorite}, {new: true});
 }
 
 module.exports = {
@@ -76,4 +81,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
+  updateContactFavorite
 }
