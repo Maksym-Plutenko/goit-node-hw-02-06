@@ -38,11 +38,6 @@ router.get("/:contactId", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   const { name, email, phone } = req.body;
 
-  // const error = validate({ name, email, phone });
-  // if (error) {
-  //   return res.status(404).json({ message: error.message });
-  // }
-
   validateBody(req, res);
 
   try {
@@ -73,11 +68,6 @@ router.delete("/:contactId", async (req, res, next) => {
 router.put("/:contactId", async (req, res, next) => {
   const id = req.params.contactId;
   const { name, email, phone } = req.body;
-
-  // const error = validate({ name, email, phone });
-  // if (error) {
-  //   return res.status(404).json({ message: error.message });
-  // }
 
   validateBody(req, res);
 

@@ -6,12 +6,6 @@ const validatioSchema = Joi.object({
   phone: Joi.string().required(),
 });
 
-// function validate(object) {
-//   const res = schema.validate(object);
-//   console.log(res);
-//   return res.error || null;
-// }
-
 const validateBody = (req, res, schema = validatioSchema) => {
   const result = schema.validate(req.body);
   if (result.error) {
