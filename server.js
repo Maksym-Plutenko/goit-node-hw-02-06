@@ -1,10 +1,13 @@
 const moongoose = require("mongoose");
+require("dotenv").config();
+
+// console.log(process.env.DB_URI);
 
 const app = require("./app");
 
-const DB_HOST = "mongodb+srv://mongouser:ltbg6VlExAvgLPKz@cluster0.lhresdv.mongodb.net/db-contacts?retryWrites=true&w=majority";
+// const DB_HOST = "mongodb+srv://mongouser:ltbg6VlExAvgLPKz@cluster0.lhresdv.mongodb.net/db-contacts?retryWrites=true&w=majority";
 moongoose
-  .connect(DB_HOST)
+  .connect(process.env.DB_URI)
   .then(() => {
     console.log("Database connection successful");
     app.listen(3000, () => {
