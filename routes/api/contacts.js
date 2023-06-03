@@ -12,7 +12,7 @@ const {
 } = require("../../models/contacts");
 
 const { answer } = require("../../utilites/answer");
-const { validate } = require("../../utilites/validate");
+const { validateBody } = require("../../utilites/validate");
 
 router.get("/", async (req, res, next) => {
   const contacts = await listContacts();
@@ -38,10 +38,12 @@ router.get("/:contactId", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   const { name, email, phone } = req.body;
 
-  const error = validate({ name, email, phone });
-  if (error) {
-    return res.status(404).json({ message: error.message });
-  }
+  // const error = validate({ name, email, phone });
+  // if (error) {
+  //   return res.status(404).json({ message: error.message });
+  // }
+
+  validateBody(req, res);
 
   try {
     const newContact = await addContact({ name, email, phone });
@@ -72,10 +74,12 @@ router.put("/:contactId", async (req, res, next) => {
   const id = req.params.contactId;
   const { name, email, phone } = req.body;
 
-  const error = validate({ name, email, phone });
-  if (error) {
-    return res.status(404).json({ message: error.message });
-  }
+  // const error = validate({ name, email, phone });
+  // if (error) {
+  //   return res.status(404).json({ message: error.message });
+  // }
+
+  validateBody(req, res);
 
   try {
     const updatedContact = await updateContact(id, { name, email, phone });
