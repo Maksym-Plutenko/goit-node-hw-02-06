@@ -19,6 +19,6 @@ const user = new Schema({
     token: String
   });
 
-const User = mongoose.model("contact", contact);
+const User = mongoose.model("user", user);
 
 module.exports = User;
