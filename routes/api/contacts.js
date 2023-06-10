@@ -14,6 +14,11 @@ const {
 const { answer } = require("../../utilites/answer");
 const { validateBody } = require("../../utilites/validate");
 
+// router.get("/", async (req, res, next) => {
+//   const contacts = await listContacts();
+//   res.json(answer(contacts, 200));
+// });
+
 router.get("/", async (req, res, next) => {
   const contacts = await listContacts();
   res.json(answer(contacts, 200));
@@ -33,6 +38,8 @@ router.get("/:contactId", async (req, res, next) => {
     console.log(err);
     next(err);
   }
+
+  // await getContactById(req, res, next);
 });
 
 router.post("/", async (req, res, next) => {
@@ -42,7 +49,7 @@ router.post("/", async (req, res, next) => {
 
   try {
     const newContact = await addContact({ name, email, phone });
-    res.status(201).json(answer(newContact, 201));
+    res.status(201).json(answer(newContact, 201));   // exception
   } catch (err) {
     console.log(err);
     next(err);
@@ -55,7 +62,7 @@ router.delete("/:contactId", async (req, res, next) => {
   try {
     const deletedContact = await removeContact(id);
     if (deletedContact) {
-      res.status(200).json({ message: "contact deleted" });
+      res.status(200).json({ message: "contact deleted" });   //exception
     } else {
       res.status(404).json({ message: "Not found" });
     }
