@@ -11,7 +11,7 @@ const findUserByEmail = async (email) => {
 };
 
 const getToken = async (id, token) => {
-  return User.findByIdAndUpdate(id, {token}, {new: true});
+  return User.findByIdAndUpdate(id, { token }, { new: true });
 };
 
 const findUserById = async (id) => {
@@ -19,7 +19,7 @@ const findUserById = async (id) => {
 };
 
 const removeToken = async (id) => {
-  return User.findByIdAndUpdate(id, {token: ''}, {new: true});
+  return User.findByIdAndUpdate(id, { token: "" }, { new: true });
 };
 
 module.exports = {
@@ -27,5 +27,5 @@ module.exports = {
   findUserByEmail,
   getToken,
   findUserById,
-  removeToken
+  removeToken,
 };

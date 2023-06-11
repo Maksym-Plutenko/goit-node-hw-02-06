@@ -1,12 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
-// const jwt = require('jsonwebtoken')
-const passport = require('passport')
-// const User = require('../../models/schemas/users')
-// require('dotenv').config()
-// const secret = process.env.KEY
-// console.log(passport);
+const passport = require("passport");
 
 const {
   listContacts,
@@ -21,35 +15,7 @@ const { answer } = require("../../utilites/answer");
 const { validateBody } = require("../../utilites/validate");
 const { auth } = require("../../utilites/auth");
 
-// router.get("/", async (req, res, next) => {
-//   const contacts = await listContacts();
-//   res.json(answer(contacts, 200));
-// });
-
-// router.use((req, res, next) => {
-//   console.log("hello!");
-//   next();
-//   // auth(req, res, next);
-// })
-
-// const auth = (req, res, next) => {
-//   passport.authenticate('jwt', { session: false }, (err, user) => {
-//     if (!user || err) {
-//       return res.status(401).json({
-//         status: 'error',
-//         code: 401,
-//         message: 'Unauthorized',
-//         data: 'Unauthorized',
-//       })
-//     }
-//     req.user = user
-//     next()
-//   })(req, res, next)
-// }
-
 router.get("/", auth, async (req, res, next) => {
-  // console.log(req.user);
-  // console.log(req.user._id);
   const contacts = await listContacts(req.user._id);
   res.json(answer(contacts, 200));
 });
@@ -68,8 +34,6 @@ router.get("/:contactId", auth, async (req, res, next) => {
     console.log(err);
     next(err);
   }
-
-  // await getContactById(req, res, next);
 });
 
 router.post("/", auth, async (req, res, next) => {
@@ -80,7 +44,7 @@ router.post("/", auth, async (req, res, next) => {
 
   try {
     const newContact = await addContact({ name, email, phone, owner });
-    res.status(201).json(answer(newContact, 201));   // exception
+    res.status(201).json(answer(newContact, 201));
   } catch (err) {
     console.log(err);
     next(err);
@@ -93,7 +57,7 @@ router.delete("/:contactId", auth, async (req, res, next) => {
   try {
     const deletedContact = await removeContact(id);
     if (deletedContact) {
-      res.status(200).json({ message: "contact deleted" });   //exception
+      res.status(200).json({ message: "contact deleted" });
     } else {
       res.status(404).json({ message: "Not found" });
     }

@@ -26,8 +26,8 @@ router.post("/register", async (req, res, next) => {
     res.status(201).json({
       user: {
         email: newUser.email,
-        subscription: newUser.subscription
-      }
+        subscription: newUser.subscription,
+      },
     });
   } catch (err) {
     if (err.name === "MongoServerError" && err.code === 11000) {
@@ -48,17 +48,13 @@ router.post("/login", async (req, res, next) => {
   try {
     const user = await findUserByEmail(email);
 
-    // console.log(user);
-
     const passwordsAreIdentical = await bcrypt.compare(password, user.password);
 
-    // if (user.password === password) {
     if (passwordsAreIdentical) {
       const payload = { id: user._id };
       const token = jwt.sign(payload, KEY, { expiresIn: "23h" });
 
       const modifiedUser = await getToken(user._id, token);
-      // console.log(modifiedUser);
 
       res.status(200).json({
         token: modifiedUser.token,
@@ -77,22 +73,11 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.post("/logout", auth, async (req, res, next) => {
-  // console.log(req.user);
   const id = req.user._id;
-
   const user = await findUserById(id);
-  // console.log(user);
-
-  // if (!user || !user.token) {
-  //   res.status(401).json({ message: "Not authorized" });
-  // } else {
-  //   const modifiedUser = await removeToken(id);
-  //   res.status(204).json({});
-  // }
 
   try {
     const user = await findUserById(id);
-    // console.log(user);
     if (!user || !user.token) {
       res.status(401).json({ message: "Not authorized" });
     } else {
@@ -110,7 +95,6 @@ router.get("/current", auth, async (req, res, next) => {
 
   try {
     const user = await findUserById(id);
-    // console.log(user);
     if (!user || !user.token) {
       res.status(401).json({ message: "Not authorized" });
     } else {
