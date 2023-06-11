@@ -63,11 +63,11 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.post("/logout", auth, async (req, res, next) => {
-  console.log(req.user);
+  // console.log(req.user);
   const id = req.user._id;
 
   const user = await findUserById(id);
-  console.log(user);
+  // console.log(user);
 
   // if (!user || !user.token) {
   //   res.status(401).json({ message: "Not authorized" });
@@ -78,7 +78,7 @@ router.post("/logout", auth, async (req, res, next) => {
 
   try {
     const user = await findUserById(id);
-    console.log(user);
+    // console.log(user);
     if (!user || !user.token) {
       res.status(401).json({ message: "Not authorized" });
     } else {
@@ -91,6 +91,24 @@ router.post("/logout", auth, async (req, res, next) => {
   }
 });
 
-router.get("/current", async (req, res, next) => {});
+router.get("/current", auth, async (req, res, next) => {
+  const id = req.user._id;
+
+  try {
+    const user = await findUserById(id);
+    // console.log(user);
+    if (!user || !user.token) {
+      res.status(401).json({ message: "Not authorized" });
+    } else {
+      res.status(200).json({
+        email: user.email,
+        subscription: user.subscription
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+});
 
 module.exports = router;
