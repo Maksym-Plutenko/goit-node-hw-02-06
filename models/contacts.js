@@ -2,8 +2,8 @@ const Contact = require("./schemas/contact");
 
 // const { wrapper } = require("../utilites/wrappers");
 
-const listContacts = async () => {
-  return Contact.find();
+const listContacts = async (id) => {
+  return Contact.find({owner: id});
 };
 
 const getContactById = async (contactId) => {

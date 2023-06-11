@@ -48,7 +48,9 @@ const { auth } = require("../../utilites/auth");
 // }
 
 router.get("/", auth, async (req, res, next) => {
-  const contacts = await listContacts();
+  // console.log(req.user);
+  // console.log(req.user._id);
+  const contacts = await listContacts(req.user._id);
   res.json(answer(contacts, 200));
 });
 
@@ -71,12 +73,13 @@ router.get("/:contactId", auth, async (req, res, next) => {
 });
 
 router.post("/", auth, async (req, res, next) => {
-  const { name, email, phone } = req.body;
-
   validateBody(req, res);
 
+  const { name, email, phone } = req.body;
+  const owner = req.user._id;
+
   try {
-    const newContact = await addContact({ name, email, phone });
+    const newContact = await addContact({ name, email, phone, owner });
     res.status(201).json(answer(newContact, 201));   // exception
   } catch (err) {
     console.log(err);

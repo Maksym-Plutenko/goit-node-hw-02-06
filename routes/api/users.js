@@ -55,7 +55,7 @@ router.post("/login", async (req, res, next) => {
     // if (user.password === password) {
     if (passwordsAreIdentical) {
       const payload = { id: user._id };
-      const token = jwt.sign(payload, KEY, { expiresIn: "1h" });
+      const token = jwt.sign(payload, KEY, { expiresIn: "23h" });
 
       const modifiedUser = await getToken(user._id, token);
       // console.log(modifiedUser);
