@@ -1,9 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 const { validateUser } = require("../../utilites/validate");
-const { register, findUser } = require("../../models/users");
+const {
+  register,
+  findUserByEmail,
+  getToken,
+  removeToken,
+} = require("../../models/users");
 
 const KEY = process.env.KEY;
 
@@ -30,18 +35,20 @@ router.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
-    const user = await findUser(email);
+    const user = await findUserByEmail(email);
 
     if (user.password === password) {
+      const payload = { id: user._id };
+      const token = jwt.sign(payload, KEY, { expiresIn: '1h' });
 
-      const payload = {email};
-      const token = jwt.sign(payload, KEY);
+      const modifiedUser = await getToken(user._id, token);
+      // console.log(modifiedUser);
 
       res.status(200).json({
-        token,
+        token: modifiedUser.token,
         user: {
-          email,
-          subscription: user.subscription,
+          email: modifiedUser.email,
+          subscription: modifiedUser.subscription,
         },
       });
     } else {

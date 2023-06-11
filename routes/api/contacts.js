@@ -1,6 +1,12 @@
 const express = require("express");
-
 const router = express.Router();
+
+const jwt = require('jsonwebtoken')
+const passport = require('passport')
+const User = require('../../models/schemas/users')
+require('dotenv').config()
+const secret = process.env.KEY
+// console.log(passport);
 
 const {
   listContacts,
@@ -13,18 +19,39 @@ const {
 
 const { answer } = require("../../utilites/answer");
 const { validateBody } = require("../../utilites/validate");
-
+// const { auth } = require("../../utilites/auth");
 // router.get("/", async (req, res, next) => {
 //   const contacts = await listContacts();
 //   res.json(answer(contacts, 200));
 // });
 
-router.get("/", async (req, res, next) => {
+// router.use((req, res, next) => {
+//   console.log("hello!");
+//   next();
+//   // auth(req, res, next);
+// })
+
+const auth = (req, res, next) => {
+  passport.authenticate('jwt', { session: false }, (err, user) => {
+    if (!user || err) {
+      return res.status(401).json({
+        status: 'error',
+        code: 401,
+        message: 'Unauthorized',
+        data: 'Unauthorized',
+      })
+    }
+    req.user = user
+    next()
+  })(req, res, next)
+}
+
+router.get("/", auth, async (req, res, next) => {
   const contacts = await listContacts();
   res.json(answer(contacts, 200));
 });
 
-router.get("/:contactId", async (req, res, next) => {
+router.get("/:contactId", auth, async (req, res, next) => {
   const id = req.params.contactId;
 
   try {
@@ -42,7 +69,7 @@ router.get("/:contactId", async (req, res, next) => {
   // await getContactById(req, res, next);
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", auth, async (req, res, next) => {
   const { name, email, phone } = req.body;
 
   validateBody(req, res);
@@ -56,7 +83,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.delete("/:contactId", async (req, res, next) => {
+router.delete("/:contactId", auth, async (req, res, next) => {
   const id = req.params.contactId;
 
   try {
@@ -72,7 +99,7 @@ router.delete("/:contactId", async (req, res, next) => {
   }
 });
 
-router.put("/:contactId", async (req, res, next) => {
+router.put("/:contactId", auth, async (req, res, next) => {
   const id = req.params.contactId;
   const { name, email, phone } = req.body;
 
@@ -91,7 +118,7 @@ router.put("/:contactId", async (req, res, next) => {
   }
 });
 
-router.patch("/:contactId/favorite", async (req, res, next) => {
+router.patch("/:contactId/favorite", auth, async (req, res, next) => {
   const id = req.params.contactId;
   const { favorite } = req.body;
 
