@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const { validateUser } = require("../../utilites/validate");
 const { auth } = require("../../utilites/auth");
@@ -18,8 +19,16 @@ router.post("/register", async (req, res, next) => {
   validateUser(req, res);
 
   try {
+    const hashPassword = await bcrypt.hash(req.body.password, 10);
+    req.body.password = hashPassword;
+
     const newUser = await register(req);
-    res.status(201).json(newUser);
+    res.status(201).json({
+      user: {
+        email: newUser.email,
+        subscription: newUser.subscription
+      }
+    });
   } catch (err) {
     if (err.name === "MongoServerError" && err.code === 11000) {
       console.log("Email in use");
@@ -39,7 +48,12 @@ router.post("/login", async (req, res, next) => {
   try {
     const user = await findUserByEmail(email);
 
-    if (user.password === password) {
+    // console.log(user);
+
+    const passwordsAreIdentical = await bcrypt.compare(password, user.password);
+
+    // if (user.password === password) {
+    if (passwordsAreIdentical) {
       const payload = { id: user._id };
       const token = jwt.sign(payload, KEY, { expiresIn: "1h" });
 
@@ -102,7 +116,7 @@ router.get("/current", auth, async (req, res, next) => {
     } else {
       res.status(200).json({
         email: user.email,
-        subscription: user.subscription
+        subscription: user.subscription,
       });
     }
   } catch (err) {
