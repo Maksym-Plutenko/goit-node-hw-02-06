@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const jwt = require('jsonwebtoken')
+// const jwt = require('jsonwebtoken')
 const passport = require('passport')
-const User = require('../../models/schemas/users')
-require('dotenv').config()
-const secret = process.env.KEY
+// const User = require('../../models/schemas/users')
+// require('dotenv').config()
+// const secret = process.env.KEY
 // console.log(passport);
 
 const {
@@ -19,7 +19,8 @@ const {
 
 const { answer } = require("../../utilites/answer");
 const { validateBody } = require("../../utilites/validate");
-// const { auth } = require("../../utilites/auth");
+const { auth } = require("../../utilites/auth");
+
 // router.get("/", async (req, res, next) => {
 //   const contacts = await listContacts();
 //   res.json(answer(contacts, 200));
@@ -31,20 +32,20 @@ const { validateBody } = require("../../utilites/validate");
 //   // auth(req, res, next);
 // })
 
-const auth = (req, res, next) => {
-  passport.authenticate('jwt', { session: false }, (err, user) => {
-    if (!user || err) {
-      return res.status(401).json({
-        status: 'error',
-        code: 401,
-        message: 'Unauthorized',
-        data: 'Unauthorized',
-      })
-    }
-    req.user = user
-    next()
-  })(req, res, next)
-}
+// const auth = (req, res, next) => {
+//   passport.authenticate('jwt', { session: false }, (err, user) => {
+//     if (!user || err) {
+//       return res.status(401).json({
+//         status: 'error',
+//         code: 401,
+//         message: 'Unauthorized',
+//         data: 'Unauthorized',
+//       })
+//     }
+//     req.user = user
+//     next()
+//   })(req, res, next)
+// }
 
 router.get("/", auth, async (req, res, next) => {
   const contacts = await listContacts();

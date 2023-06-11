@@ -14,13 +14,18 @@ const getToken = async (id, token) => {
   return User.findByIdAndUpdate(id, {token}, {new: true});
 };
 
-const removeToken = async (id, token) => {
-  
+const findUserById = async (id) => {
+  return User.findById(id);
+};
+
+const removeToken = async (id) => {
+  return User.findByIdAndUpdate(id, {token: ''}, {new: true});
 };
 
 module.exports = {
   register,
   findUserByEmail,
   getToken,
+  findUserById,
   removeToken
 };
