@@ -1,7 +1,7 @@
 const multer = require("multer");
-const patch = require("path");
+const path = require('path');
 
-const tempDir = patch("..", __dirname, "temp");
+const tempDir = path.join(__dirname, "..", "temp");
 // con log
 console.log(tempDir);
 
@@ -10,7 +10,7 @@ const config = multer.diskStorage({
 });
 
 const upload = multer({
-  storage: storage,
+  storage: config,
 });
 
 module.exports = upload;
