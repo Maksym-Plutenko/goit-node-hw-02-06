@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const gravatar = require('gravatar');
+const gravatar = require("gravatar");
 const fs = require("fs/promises");
-const path = require('path');
+const path = require("path");
 const upload = require("../../utilites/upload");
 
 const { validateUser } = require("../../utilites/validate");
@@ -114,11 +114,33 @@ router.get("/current", auth, async (req, res, next) => {
   }
 });
 
-router.patch("/avatars", auth, upload.single('avatar'), async (req, res, next) => {
-  // const { path: previousName, originalname } = req.file;
-  // const newName = path.join(__dirname, "..", "..", "public", "avatars", originalname);
-  // await fs.rename(previousName, newName);
-  res.status(200).json({ message: "File uploaded" });
-});
+router.patch(
+  "/avatars",
+  auth,
+  upload.single("avatar"),
+  async (req, res, next) => {
+    const id = req.user._id;
+    const { path: previousName, originalname } = req.file;
+    const newShortName = `${id}_${originalname}`;
+    const newFullName = path.join(
+      __dirname,
+      "..",
+      "..",
+      "public",
+      "avatars",
+      newShortName
+    );
+
+    try {
+      await fs.rename(previousName, newFullName);
+      res.status(200).json({
+        avatarURL: `avatars/${newShortName}`,
+      });
+    } catch (err) {
+      await fs.unlink(temporaryName);
+      return next(err);
+    }
+  }
+);
 
 module.exports = router;
