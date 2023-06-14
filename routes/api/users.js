@@ -16,6 +16,7 @@ const {
   getToken,
   findUserById,
   removeToken,
+  updateAvatar,
 } = require("../../models/users");
 
 const KEY = process.env.KEY;
@@ -122,6 +123,7 @@ router.patch(
   async (req, res, next) => {
     const id = req.user._id;
     const { path: previousName, originalname } = req.file;
+    // const resizedName = `${previousName}.temp`;
     const newShortName = `${id}_${originalname}`;
     const newFullName = path.join(
       __dirname,
@@ -132,15 +134,36 @@ router.patch(
       newShortName
     );
 
+    // try {
+    //   const picture = await Jimp.read(previousName);
+    //   picture.resize(250, 250).write(previousName);
+    // } catch (err) {
+    //   return next(err);
+    // }
+
     try {
-      const picture = await Jimp.read(previousName);
-      picture.resize(250, 250).write(previousName);
+      // const picture = await Jimp.read(previousName);
+      // await picture.resize(250, 250).write(previousName);
+
+      // Jimp.read(previousName, (err, lenna) => {
+      //   if (err) throw err;
+      //   lenna
+      //     .resize(250, 250) // resize
+      //     .write(previousName); // save
+      // });
+
       await fs.rename(previousName, newFullName);
+
+      const picture = await Jimp.read(newFullName);
+      picture.resize(250, 250).write(newFullName);
+
+      const modifiedUser = await updateAvatar(id, `avatars/${newShortName}`);
+      console.log(modifiedUser);
       res.status(200).json({
-        avatarURL: `avatars/${newShortName}`,
+        avatarURL: modifiedUser.avatarURL,
       });
     } catch (err) {
-      await fs.unlink(temporaryName);
+      await fs.unlink(previousName);
       return next(err);
     }
   }

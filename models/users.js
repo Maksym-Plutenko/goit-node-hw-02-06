@@ -22,10 +22,15 @@ const removeToken = async (id) => {
   return User.findByIdAndUpdate(id, { token: "" }, { new: true });
 };
 
+const updateAvatar = async (id, avatarURL) => {
+  return User.findByIdAndUpdate(id, { avatarURL }, { new: true });
+};
+
 module.exports = {
   register,
   findUserByEmail,
   getToken,
   findUserById,
   removeToken,
+  updateAvatar,
 };
