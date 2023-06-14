@@ -6,6 +6,7 @@ const gravatar = require("gravatar");
 const fs = require("fs/promises");
 const path = require("path");
 const upload = require("../../utilites/upload");
+const Jimp = require("jimp");
 
 const { validateUser } = require("../../utilites/validate");
 const { auth } = require("../../utilites/auth");
@@ -132,6 +133,8 @@ router.patch(
     );
 
     try {
+      const picture = await Jimp.read(previousName);
+      picture.resize(250, 250).write(previousName);
       await fs.rename(previousName, newFullName);
       res.status(200).json({
         avatarURL: `avatars/${newShortName}`,
