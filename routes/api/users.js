@@ -2,6 +2,11 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const gravatar = require("gravatar");
+const fs = require("fs/promises");
+const path = require("path");
+const upload = require("../../utilites/upload");
+const Jimp = require("jimp");
 
 const { validateUser } = require("../../utilites/validate");
 const { auth } = require("../../utilites/auth");
@@ -11,12 +16,14 @@ const {
   getToken,
   findUserById,
   removeToken,
+  updateAvatar,
 } = require("../../models/users");
 
 const KEY = process.env.KEY;
 
 router.post("/register", async (req, res, next) => {
   validateUser(req, res);
+  req.body.avatarURL = gravatar.url(req.body.email);
 
   try {
     const hashPassword = await bcrypt.hash(req.body.password, 10);
@@ -108,5 +115,41 @@ router.get("/current", auth, async (req, res, next) => {
     next(err);
   }
 });
+
+router.patch(
+  "/avatars",
+  auth,
+  upload.single("avatar"),
+  async (req, res, next) => {
+    const id = req.user._id;
+    const { path: previousName, originalname } = req.file;
+    const newShortName = `${id}_${originalname}`;
+    const newFullName = path.join(
+      __dirname,
+      "..",
+      "..",
+      "public",
+      "avatars",
+      newShortName
+    );
+
+    try {
+      await fs.rename(previousName, newFullName);
+
+      const picture = await Jimp.read(newFullName);
+      picture.resize(250, 250).write(newFullName);
+
+      const modifiedUser = await updateAvatar(id, `avatars/${newShortName}`);
+      console.log(modifiedUser);
+
+      res.status(200).json({
+        avatarURL: modifiedUser.avatarURL,
+      });
+    } catch (err) {
+      await fs.unlink(previousName);
+      return next(err);
+    }
+  }
+);
 
 module.exports = router;
