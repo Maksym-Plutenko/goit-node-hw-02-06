@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const gravatar = require('gravatar');
 
 const { validateUser } = require("../../utilites/validate");
 const { auth } = require("../../utilites/auth");
@@ -17,6 +18,7 @@ const KEY = process.env.KEY;
 
 router.post("/register", async (req, res, next) => {
   validateUser(req, res);
+  req.body.avatarURL = gravatar.url(req.body.email);
 
   try {
     const hashPassword = await bcrypt.hash(req.body.password, 10);

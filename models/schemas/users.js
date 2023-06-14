@@ -16,7 +16,8 @@ const user = new Schema({
       enum: ["starter", "pro", "business"],
       default: "starter"
     },
-    token: String
+    token: String,
+    avatarURL: String
   });
 
 const User = mongoose.model("user", user);
