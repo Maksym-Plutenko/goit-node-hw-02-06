@@ -17,6 +17,8 @@ const {
   findUserById,
   removeToken,
   updateAvatar,
+  findUserByToken,
+  verify,
 } = require("../../models/users");
 
 const KEY = process.env.KEY;
@@ -151,5 +153,24 @@ router.patch(
     }
   }
 );
+
+router.get("/verify/:verificationToken", async (req, res, next) => {
+  const token = req.params.verificationToken;
+
+  try {
+    const user = await findUserByToken(token);
+    if (user) {
+      await verify(user._id);
+      res.status(200).json({
+        message: "Verification successful",
+      });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+});
 
 module.exports = router;
