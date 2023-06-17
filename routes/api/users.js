@@ -21,20 +21,24 @@ const {
   findUserByToken,
   verifyEmail,
 } = require("../../models/users");
-
+const sendMail = require("../../utilites/sendMail");
 
 const KEY = process.env.KEY;
 
 router.post("/register", async (req, res, next) => {
   validateUser(req, res);
   req.body.avatarURL = gravatar.url(req.body.email);
-  req.body.verificationToken = nanoid();
+  const token = nanoid();
+  req.body.verificationToken = token;
 
   try {
     const hashPassword = await bcrypt.hash(req.body.password, 10);
     req.body.password = hashPassword;
 
     const newUser = await register(req);
+
+    await sendMail(newUser.email, token);
+
     res.status(201).json({
       user: {
         email: newUser.email,
@@ -145,7 +149,6 @@ router.patch(
       picture.resize(250, 250).write(newFullName);
 
       const modifiedUser = await updateAvatar(id, `avatars/${newShortName}`);
-      console.log(modifiedUser);
 
       res.status(200).json({
         avatarURL: modifiedUser.avatarURL,
