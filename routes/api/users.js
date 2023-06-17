@@ -7,6 +7,7 @@ const fs = require("fs/promises");
 const path = require("path");
 const upload = require("../../utilites/upload");
 const Jimp = require("jimp");
+const { nanoid } = require("nanoid");
 
 const { validateUser } = require("../../utilites/validate");
 const { auth } = require("../../utilites/auth");
@@ -18,14 +19,16 @@ const {
   removeToken,
   updateAvatar,
   findUserByToken,
-  verify,
+  verifyEmail,
 } = require("../../models/users");
+
 
 const KEY = process.env.KEY;
 
 router.post("/register", async (req, res, next) => {
   validateUser(req, res);
   req.body.avatarURL = gravatar.url(req.body.email);
+  req.body.verificationToken = nanoid();
 
   try {
     const hashPassword = await bcrypt.hash(req.body.password, 10);
@@ -160,7 +163,7 @@ router.get("/verify/:verificationToken", async (req, res, next) => {
   try {
     const user = await findUserByToken(token);
     if (user) {
-      await verify(user._id);
+      await verifyEmail(user._id);
       res.status(200).json({
         message: "Verification successful",
       });

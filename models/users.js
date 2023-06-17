@@ -36,7 +36,7 @@ const findUserByToken = async (token) => {
   });
 };
 
-const verify = async (id) => {
+const verifyEmail = async (id) => {
   return User.findByIdAndUpdate(id, { verify: true, verificationToken: "" }, { new: true });
 };
 
@@ -48,5 +48,5 @@ module.exports = {
   removeToken,
   updateAvatar,
   findUserByToken,
-  verify
+  verifyEmail
 };
