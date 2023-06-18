@@ -26,6 +26,20 @@ const updateAvatar = async (id, avatarURL) => {
   return User.findByIdAndUpdate(id, { avatarURL }, { new: true });
 };
 
+const findUserByToken = async (token) => {
+  return User.findOne({
+    verificationToken: token,
+  });
+};
+
+const verifyEmail = async (id) => {
+  return User.findByIdAndUpdate(
+    id,
+    { verify: true, verificationToken: "" },
+    { new: true }
+  );
+};
+
 module.exports = {
   register,
   findUserByEmail,
@@ -33,4 +47,6 @@ module.exports = {
   findUserById,
   removeToken,
   updateAvatar,
+  findUserByToken,
+  verifyEmail,
 };

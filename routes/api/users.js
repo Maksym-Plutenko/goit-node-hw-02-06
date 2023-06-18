@@ -7,6 +7,7 @@ const fs = require("fs/promises");
 const path = require("path");
 const upload = require("../../utilites/upload");
 const Jimp = require("jimp");
+const { nanoid } = require("nanoid");
 
 const { validateUser } = require("../../utilites/validate");
 const { auth } = require("../../utilites/auth");
@@ -17,19 +18,27 @@ const {
   findUserById,
   removeToken,
   updateAvatar,
+  findUserByToken,
+  verifyEmail,
 } = require("../../models/users");
+const sendEmailByNodemailer = require("../../utilites/sendMailByNodemailer");
 
 const KEY = process.env.KEY;
 
 router.post("/register", async (req, res, next) => {
   validateUser(req, res);
   req.body.avatarURL = gravatar.url(req.body.email);
+  const token = nanoid();
+  req.body.verificationToken = token;
 
   try {
     const hashPassword = await bcrypt.hash(req.body.password, 10);
     req.body.password = hashPassword;
 
     const newUser = await register(req);
+
+    await sendEmailByNodemailer(newUser.email, token);
+
     res.status(201).json({
       user: {
         email: newUser.email,
@@ -58,18 +67,22 @@ router.post("/login", async (req, res, next) => {
     const passwordsAreIdentical = await bcrypt.compare(password, user.password);
 
     if (passwordsAreIdentical) {
-      const payload = { id: user._id };
-      const token = jwt.sign(payload, KEY, { expiresIn: "23h" });
+      if (user.verify) {
+        const payload = { id: user._id };
+        const token = jwt.sign(payload, KEY, { expiresIn: "23h" });
 
-      const modifiedUser = await getToken(user._id, token);
+        const modifiedUser = await getToken(user._id, token);
 
-      res.status(200).json({
-        token: modifiedUser.token,
-        user: {
-          email: modifiedUser.email,
-          subscription: modifiedUser.subscription,
-        },
-      });
+        res.status(200).json({
+          token: modifiedUser.token,
+          user: {
+            email: modifiedUser.email,
+            subscription: modifiedUser.subscription,
+          },
+        });
+      } else {
+        res.status(401).json({ message: "Please, verify your email!" });
+      }
     } else {
       res.status(401).json({ message: "Email or password is wrong" });
     }
@@ -140,7 +153,6 @@ router.patch(
       picture.resize(250, 250).write(newFullName);
 
       const modifiedUser = await updateAvatar(id, `avatars/${newShortName}`);
-      console.log(modifiedUser);
 
       res.status(200).json({
         avatarURL: modifiedUser.avatarURL,
@@ -151,5 +163,46 @@ router.patch(
     }
   }
 );
+
+router.get("/verify/:verificationToken", async (req, res, next) => {
+  const token = req.params.verificationToken;
+
+  try {
+    const user = await findUserByToken(token);
+    if (user) {
+      await verifyEmail(user._id);
+      res.status(200).json({
+        message: "Verification successful",
+      });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+});
+
+router.post("/verify", async (req, res, next) => {
+  const email = req.body.email;
+
+  if (email) {
+    try {
+      const user = await findUserByEmail(email);
+      if (user.verify) {
+        res
+          .status(400)
+          .json({ message: "Verification has already been passed" });
+      } else {
+        await sendEmailByNodemailer(user.email, user.verificationToken);
+      }
+    } catch (err) {
+      console.log(err);
+      next(err);
+    }
+  } else {
+    res.status(400).json({ message: "missing required field emaild" });
+  }
+});
 
 module.exports = router;
