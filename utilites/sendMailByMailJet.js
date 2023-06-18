@@ -1,26 +1,10 @@
 const Mailjet = require("node-mailjet");
 require("dotenv").config();
 
-// const mailjet = Mailjet.apiConnect(
-//   process.env.MJ_APIKEY_PUBLIC,
-//   process.env.MJ_APIKEY_PRIVATE,
-// );
-
-// const { MJ_APIKEY_PUBLIC, MJ_APIKEY_PRIVATE, MJ_SENDER_EMAIL} = process.env;
-
 const mailjet = new Mailjet({
   apiKey: process.env.MJ_APIKEY_PUBLIC,
-  apiSecret:
-    process.env.MJ_APIKEY_PRIVATE,
+  apiSecret: process.env.MJ_APIKEY_PRIVATE,
 });
-
-// request
-//   .then((result) => {
-//     console.log(result.body);
-//   })
-//   .catch((err) => {
-//     console.log(err.statusCode);
-//   });
 
 const sendMail = async (email, token) => {
   const request = mailjet.post("send", { version: "v3.1" }).request({
@@ -43,13 +27,6 @@ const sendMail = async (email, token) => {
       },
     ],
   });
-
-  // try {
-  //   const result = await request;
-  //   console.log(result.body);
-  // } catch (err) {
-  //   console.log(err);
-  // }
 
   request
     .then((result) => {

@@ -190,7 +190,9 @@ router.post("/verify", async (req, res, next) => {
     try {
       const user = await findUserByEmail(email);
       if (user.verify) {
-        res.status(400).json({ message: "Verification has already been passed" });
+        res
+          .status(400)
+          .json({ message: "Verification has already been passed" });
       } else {
         await sendEmailByNodemailer(user.email, user.verificationToken);
       }

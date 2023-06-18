@@ -26,10 +26,6 @@ const updateAvatar = async (id, avatarURL) => {
   return User.findByIdAndUpdate(id, { avatarURL }, { new: true });
 };
 
-// const verify = async (token) => {
-//   return User.findOne({ verificationToken: token });
-// };
-
 const findUserByToken = async (token) => {
   return User.findOne({
     verificationToken: token,
@@ -37,7 +33,11 @@ const findUserByToken = async (token) => {
 };
 
 const verifyEmail = async (id) => {
-  return User.findByIdAndUpdate(id, { verify: true, verificationToken: "" }, { new: true });
+  return User.findByIdAndUpdate(
+    id,
+    { verify: true, verificationToken: "" },
+    { new: true }
+  );
 };
 
 module.exports = {
@@ -48,5 +48,5 @@ module.exports = {
   removeToken,
   updateAvatar,
   findUserByToken,
-  verifyEmail
+  verifyEmail,
 };
