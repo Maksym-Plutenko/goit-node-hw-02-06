@@ -67,18 +67,22 @@ router.post("/login", async (req, res, next) => {
     const passwordsAreIdentical = await bcrypt.compare(password, user.password);
 
     if (passwordsAreIdentical) {
-      const payload = { id: user._id };
-      const token = jwt.sign(payload, KEY, { expiresIn: "23h" });
+      if (user.verify) {
+        const payload = { id: user._id };
+        const token = jwt.sign(payload, KEY, { expiresIn: "23h" });
 
-      const modifiedUser = await getToken(user._id, token);
+        const modifiedUser = await getToken(user._id, token);
 
-      res.status(200).json({
-        token: modifiedUser.token,
-        user: {
-          email: modifiedUser.email,
-          subscription: modifiedUser.subscription,
-        },
-      });
+        res.status(200).json({
+          token: modifiedUser.token,
+          user: {
+            email: modifiedUser.email,
+            subscription: modifiedUser.subscription,
+          },
+        });
+      } else {
+        res.status(401).json({ message: "Please, verify your email!" });
+      }
     } else {
       res.status(401).json({ message: "Email or password is wrong" });
     }
