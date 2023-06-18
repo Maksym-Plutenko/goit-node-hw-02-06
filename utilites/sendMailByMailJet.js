@@ -9,9 +9,9 @@ require("dotenv").config();
 // const { MJ_APIKEY_PUBLIC, MJ_APIKEY_PRIVATE, MJ_SENDER_EMAIL} = process.env;
 
 const mailjet = new Mailjet({
-  apiKey: process.env.MJ_APIKEY_PUBLIC || "00a7a4e867873fcc2ef8db4877c360b7",
+  apiKey: process.env.MJ_APIKEY_PUBLIC,
   apiSecret:
-    process.env.MJ_APIKEY_PRIVATE || "3e51a968c586923dfbd7622c98b6c679",
+    process.env.MJ_APIKEY_PRIVATE,
 });
 
 // request

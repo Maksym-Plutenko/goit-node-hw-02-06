@@ -21,7 +21,7 @@ const {
   findUserByToken,
   verifyEmail,
 } = require("../../models/users");
-const sendMail = require("../../utilites/sendMail");
+const sendEmailByNodemailer = require("../../utilites/sendMailByNodemailer");
 
 const KEY = process.env.KEY;
 
@@ -37,7 +37,7 @@ router.post("/register", async (req, res, next) => {
 
     const newUser = await register(req);
 
-    await sendMail(newUser.email, token);
+    await sendEmailByNodemailer(newUser.email, token);
 
     res.status(201).json({
       user: {
