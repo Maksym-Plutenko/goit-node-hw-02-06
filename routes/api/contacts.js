@@ -9,11 +9,11 @@ const {
   addContact,
   updateContact,
   updateContactFavorite,
-} = require("../../models/contacts");
+} = require("../../controllers/contactControllers");
 
-const { answer } = require("../../utilites/answer");
-const { validateBody } = require("../../utilites/validate");
-const { auth } = require("../../utilites/auth");
+const { answer } = require("../../utility/answer");
+const { validateBody } = require("../../utility/validate");
+const { auth } = require("../../utility/auth");
 
 router.get("/", auth, async (req, res, next) => {
   const contacts = await listContacts(req.user._id);

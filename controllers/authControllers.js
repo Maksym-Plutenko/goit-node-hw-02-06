@@ -1,4 +1,4 @@
-const User = require("./schemas/users");
+const User = require("../models/schemas/users");
 
 const register = async (req) => {
   return User.create(req.body);

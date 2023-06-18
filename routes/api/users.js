@@ -5,12 +5,12 @@ const bcrypt = require("bcrypt");
 const gravatar = require("gravatar");
 const fs = require("fs/promises");
 const path = require("path");
-const upload = require("../../utilites/upload");
+const upload = require("../../utility/upload");
 const Jimp = require("jimp");
 const { nanoid } = require("nanoid");
 
-const { validateUser } = require("../../utilites/validate");
-const { auth } = require("../../utilites/auth");
+const { validateUser } = require("../../utility/validate");
+const { auth } = require("../../utility/auth");
 const {
   register,
   findUserByEmail,
@@ -20,8 +20,8 @@ const {
   updateAvatar,
   findUserByToken,
   verifyEmail,
-} = require("../../models/users");
-const sendEmailByNodemailer = require("../../utilites/sendMailByNodemailer");
+} = require("../../controllers/authControllers");
+const sendEmailByNodemailer = require("../../utility/helpers/sendMailByNodemailer");
 
 const KEY = process.env.KEY;
 
